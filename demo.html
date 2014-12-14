@@ -12,6 +12,7 @@
   <link rel="import" href="../paper-button/paper-button.html">
   <link rel="import" href="../paper-toggle-button/paper-toggle-button.html">
   <link rel="import" href="../paper-input/paper-input.html">
+  <link rel="import" href="../paper-toast/paper-toast.html">
   <link rel="import" href="paper-dialog-fullscreen.html">
 
   <style shim-shadowdom>
@@ -27,15 +28,13 @@
     .settings > div {
       margin: 1em 0; 
     }
-
-    paper-input[required] {
-
-    }
   </style>
 
 </head>
 <body unresolved>
   <template is="auto-binding">
+
+    <paper-toast id="saveMsg" text="Save button pressed"></paper-toast>
 
     <section>
       <p>Example settings dialog</p>
@@ -63,7 +62,7 @@
       <paper-button raised on-tap="{{toggle2}}">Dialog 2</paper-button>
 
       <paper-dialog-fullscreen id="dialog2" heading="Edit This">
-        <paper-button affirmative>Save</paper-button>
+        <paper-button affirmative on-tap="{{save}}">Save</paper-button>
         <p>The "X" button indicates any changes will be discarded when dismissed</p>
         <div>The confirmation action is disabled until all required actions are performed.</div>
         <div horizontal layout>
@@ -84,7 +83,11 @@
     };
     scope.toggle2 = function() {
       $('#dialog2').toggle();
-    }
+    };
+    scope.save = function() {
+      $('#saveMsg').show();
+    };
+
   </script>
 
 </body>
