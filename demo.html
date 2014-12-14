@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
+  <title>paper-dialog-fullscreen Demo</title>
+
+  <script src="../webcomponentsjs/webcomponents.js"></script>
+
+  <link rel="import" href="../paper-button/paper-button.html">
+  <link rel="import" href="../paper-toggle-button/paper-toggle-button.html">
+  <link rel="import" href="../paper-input/paper-input.html">
+  <link rel="import" href="paper-dialog-fullscreen.html">
+
+  <style shim-shadowdom>
+    body {
+      font-family: sans-serif;
+    }
+    section {
+      margin: 3em 0;
+    }
+    .settings {
+      width: 200px;
+    }
+    .settings > div {
+      margin: 1em 0; 
+    }
+
+    paper-input[required] {
+
+    }
+  </style>
+
+</head>
+<body unresolved>
+  <template is="auto-binding">
+
+    <section>
+      <p>Example settings dialog</p>
+
+      <paper-button raised on-tap="{{toggle1}}">Dialog 1</paper-button>
+
+      <paper-dialog-fullscreen id="dialog1" heading="Settings">
+        <p>The back-arrow button indicates that any changes are saved immediately.</p>
+        <section class="settings">
+          <div center horizontal layout>
+            <div flex>Wi-Fi</div>
+            <paper-toggle-button checked></paper-toggle-button>
+          </div>
+          <div center horizontal layout>
+            <div flex>Bluetooth</div>
+            <paper-toggle-button></paper-toggle-button>
+          </div>
+        </section>
+      </paper-dialog-fullscreen>
+    </section>
+
+    <section>
+      <p>Example edit dialog</p>
+
+      <paper-button raised on-tap="{{toggle2}}">Dialog 2</paper-button>
+
+      <paper-dialog-fullscreen id="dialog2" heading="Edit This" validat opened>
+        <paper-button affirmative disabled>Save</paper-button>
+        <p>The "X" button indicates any changes will be discarded when dismissed</p>
+        <div>The confirmation action is disabled until all required actions are performed.</div>
+        <div horizontal layout>
+          <paper-input label="Required field" floatingLabel required>
+        </div>
+        <div horizontal layout>
+          <paper-input id="optional" label="Optional field" floatingLabel>
+        </div>
+      </paper-dialog-fullscreen>
+    </section>
+
+  </template>
+  <script>
+    var $ = document.querySelector.bind(document);
+    var scope=$('template[is=auto-binding]');
+    scope.toggle1 = function() {
+      $('#dialog1').toggle();
+    };
+    scope.toggle2 = function() {
+      $('#dialog2').toggle();
+    }
+  </script>
+
+</body>
+</html>

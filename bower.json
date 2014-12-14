@@ -1,0 +1,37 @@
+{
+  "name": "paper-dialog-fullscreen",
+  "version": "0.1.0",
+  "authors": [
+    "Ben Davis <bendavis78@gmail.com>"
+  ],
+  "description": "Full-screen paper dialog with header bar and actions at the top",
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer",
+    "dialog",
+    "fullscreen"
+  ],
+  "main": "paper-dialog-fullscreen.html",
+  "license": "MIT",
+  "homepage": "https://github.com/bendavis78/paper-dialog-fullscreen/",
+  "ignore": [
+    "/.*",
+    "/tests/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#master",
+    "webcomponents": "Polymer/webcomponents#master",
+    "paper-dialog": "Polymer/paper-dialog#master",
+    "core-header-panel": "Polymer/core-header-panel#master",
+    "core-icon-button": "Polymer/core-icon-button#master",
+    "core-toolbar": "Polymer/core-toolbar#master",
+    "core-media-query": "Polymer/core-media-query"
+  },
+  "devDependencies": {
+    "web-component-tester": "Polymer/web-component-tester#^0.7.3",
+    "paper-button": "Polymer/paper-button#master",
+    "paper-toggle-button": "Polymer/paper-toggle-button#master",
+    "paper-input": "Polymer/paper-input#master"
+  }
+}
