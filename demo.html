@@ -63,14 +63,14 @@
       <paper-button raised on-tap="{{toggle2}}">Dialog 2</paper-button>
 
       <paper-dialog-fullscreen id="dialog2" heading="Edit This" validat opened>
-        <paper-button affirmative disabled>Save</paper-button>
+        <paper-button affirmative>Save</paper-button>
         <p>The "X" button indicates any changes will be discarded when dismissed</p>
         <div>The confirmation action is disabled until all required actions are performed.</div>
         <div horizontal layout>
-          <paper-input label="Required field" floatingLabel required>
+          <paper-input label="First name" floatingLabel>
         </div>
         <div horizontal layout>
-          <paper-input id="optional" label="Optional field" floatingLabel>
+          <paper-input label="Last name" floatingLabel>
         </div>
       </paper-dialog-fullscreen>
     </section>

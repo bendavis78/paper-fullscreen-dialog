@@ -2,7 +2,7 @@
 -->
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../core-header-panel/core-header-panel.html">
-<link rel="import" href="../core-icon-button/core-icon-button.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../core-toolbar/core-toolbar.html">
 <link rel="import" href="../paper-dialog/paper-dialog-base.html">
 <link rel="import" href="../core-media-query/core-media-query.html">
@@ -24,15 +24,16 @@ indicating that any changes are immediately saved upon selection.
 
 Example "settings" dialog (no confirmation action):
 
-    <paper-dialog-fullscreen id="dialog1" heading="Title">
-      <section>
+    <paper-dialog-fullscreen id="dialog1" heading="Settings">
+      <p>The back-arrow button indicates that any changes are saved immediately.</p>
+      <section class="settings">
         <div center horizontal layout>
           <div flex>Wi-Fi</div>
           <paper-toggle-button checked></paper-toggle-button>
         </div>
         <div center horizontal layout>
           <div flex>Bluetooth</div>
-          <paper-toggle-button class="blue"></paper-toggle-button>
+          <paper-toggle-button></paper-toggle-button>
         </div>
       </section>
     </paper-dialog-fullscreen>
@@ -42,17 +43,17 @@ for the action, such as “save”, “send”, “add”, “share”, “updat
 
 Example "edit" dialog:
 
-    <paper-dialog-fullscreen id="dialog2" heading="Title">
-      <paper-button confirm disabled>Save</paper-button>
+    <paper-dialog-fullscreen id="dialog2" heading="Edit This" validat opened>
+      <paper-button affirmative>Save</paper-button>
       <p>The "X" button indicates any changes will be discarded when dismissed</p>
       <div>The confirmation action is disabled until all required actions are performed.</div>
       <div horizontal layout>
-        <paper-input label="First Name" floatingLabel>
-      <div>
-      <div horizontal layout>
-        <paper-input label="Last Name" floatingLabel>
+        <paper-input label="First name" floatingLabel>
       </div>
-    </paper-dialog-fullscreen>
+      <div horizontal layout>
+        <paper-input label="Last name" floatingLabel>
+      </div>
+    </paper-dialog-fullscreen>er-dialog-fullscreen>
 
 
 @element paper-dialog-fullscreen
@@ -94,9 +95,9 @@ Example "edit" dialog:
 
     <core-header-panel main id="headerPanel" mode="{{mode}}">
       <core-toolbar>
-        <core-icon-button id="dissmissButton" icon="{{dismissIcon}}" on-tap="{{close}}"></core-icon-button>
+        <paper-icon-button id="dismissBtn" on-tap="{{close}}"></paper-icon-button>
         <div flex>{{heading}}</div>
-        <content select="[affirmative]"></content>
+        <content id="affirmative" select="[affirmative]"></content>
       </core-toolbar>
       <div id="scroller">
         <content select="*"></content>
@@ -110,6 +111,7 @@ Example "edit" dialog:
       backdrop: true,
       autoCloseDisabled: true,
       layered: false,
+      affirmativeBtn: null,
 
       /**
        * Fired when the narrow layout changes.
@@ -121,15 +123,16 @@ Example "edit" dialog:
 
       publish: {
         /**
-         * The `dismissIcon` attribute sets the icon for the dismiss button. This
-         * should be set to 'close' in situations where user-input information is
-         * discarded upon dismissal of the dialog.
+         * The `dismissIcon` attribute sets the icon for the dismiss button. The
+         * default behavior is to use the 'arrow-back' icon when there is no
+         * affirmative button (implying that changes are applied immediately), 
+         * and 'close' otherwise.
          *
          * @attribute dismissIcon
          * @type string
-         * @default 'arrow-back'
+         * @default ''
          */
-        dismissIcon: 'arrow-back',
+        dismissIcon: '',
 
         /**
          * When the browser window size is larger than the `responsiveWidth`, 
@@ -144,6 +147,22 @@ Example "edit" dialog:
 
       ready: function() {
         this.super();
+      },
+
+      attached: function() {
+          var nodes = this.$.affirmative.getDistributedNodes();
+          if (nodes.length) {
+            this.affirmativeBtn = nodes[0];
+          }
+          this.dismissIconChanged();
+      },
+
+      dismissIconChanged: function() {
+        if (this.dismissIcon == '') {
+          this.$.dismissBtn.icon = this.affirmativeBtn ? 'close' : 'arrow-back';
+        } else {
+          this.$.dismissBtn.icon = this.dismissIcon;
+        }
       },
 
       narrowChanged: function() {
