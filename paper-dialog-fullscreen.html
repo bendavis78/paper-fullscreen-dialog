@@ -71,8 +71,12 @@ Example "edit" dialog:
         top: 0;
         bottom: 0;
         background: #fff;
-        width: 100%;
         margin: 0;
+      }
+
+      :host([narrow]) {
+        left: 0;
+        right: 0;
       }
 
       [main] {
@@ -88,8 +92,10 @@ Example "edit" dialog:
         padding: 24px;
       }
 
-      ::content [affirmative] {
+      ::content paper-button[affirmative] {
         font-size: 14px;
+      }
+      ::content paper-button[disabled] {
         background: none;
       }
     </style>
@@ -146,8 +152,8 @@ Example "edit" dialog:
         responsiveWidth: '600px',
       },
 
-      ready: function() {
-        this.super();
+      domReady: function() {
+        this.narrowChanged();
       },
 
       attached: function() {
@@ -169,14 +175,10 @@ Example "edit" dialog:
       narrowChanged: function() {
         if (!this.narrow) {
           this.style.width = this.responsiveWidth;
-          this.style.left = this.style.right = null;
-          this.style.right = null;
+          this.removeAttribute('narrow');
         } else {
           this.style.width = 'auto';
-          this.style.left = this.style.right = 0;
-        }
-        if (this.dimesions) {
-          this.repositionTarget();
+          this.setAttribute('narrow', true);
         }
         this.fire('core-responsive-change', {narrow: this.narrow});
       },
