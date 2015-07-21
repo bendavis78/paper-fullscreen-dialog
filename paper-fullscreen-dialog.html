@@ -1,0 +1,216 @@
+<!--
+Material Design [Full-screen dialogs](http://www.google.com/design/spec/components/dialogs.html#dialogs-full-screen-dialogs)
+
+Provides a full-screen dialog based on the material design spec.  In full-screen
+dialogs, the confirmation and dismissive actions are at the top of the screen.
+
+Use `responsiveWidth` to control display widths on which the dialog takes up the
+entire screen. The dialog should only be full-screen on mobile devices. When the
+window size is wider than responsiveWidth, the dialog becomes a modal dialog
+with a backdrop.
+
+An element with the `"tool"` attribute will serve as the title content.
+
+A dialog with no confirmation action will have a `"arrow-back"` icon,
+indicating that any changes are immediately saved upon selection.
+
+Example "settings" dialog (no confirmation action):
+
+    <paper-fullscreen-dialog id="dialog1" title="Settings">
+      <p>The back-arrow button indicates that any changes are saved immediately.</p>
+      <section class="settings">
+        <div center horizontal layout>
+          <div flex>Wi-Fi</div>
+          <paper-toggle-button checked></paper-toggle-button>
+        </div>
+        <div center horizontal layout>
+          <div flex>Bluetooth</div>
+          <paper-toggle-button></paper-toggle-button>
+        </div>
+      </section>
+    </paper-fullscreen-dialog>
+
+A dialog with a confirmation action should use descriptive and accurate word
+for the action, such as “save”, “send”, “add”, “share”, “update”, or “create”.
+
+Example "edit" dialog:
+
+    <paper-fullscreen-dialog id="dialog2" title="Edit This" validat opened>
+      <paper-button affirmative>Save</paper-button>
+      <p>The "X" button indicates any changes will be discarded when dismissed</p>
+      <div>The confirmation action is disabled until all required actions are performed.</div>
+      <div horizontal layout>
+        <paper-input label="First name" floatingLabel>
+      </div>
+      <div horizontal layout>
+        <paper-input label="Last name" floatingLabel>
+      </div>
+    </paper-fullscreen-dialog>er-dialog-fullscreen>
+
+
+@element paper-fullscreen-dialog
+@blurb Element providing a full-screen dialog with dismissive and confirmation actions 
+@status alpha
+@homepage https://github.com/bendavis78/paper-fullscreen-dialog
+@demo demo/index.html
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-media-query/iron-media-query.html">
+<link rel="import" href="../paper-dialog-behavior/paper-dialog-behavior.html">
+<link rel="import" href="../paper-header-panel/paper-header-panel.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../paper-styles/paper-styles.html">
+
+<dom-module id="paper-fullscreen-dialog">
+  <link rel="import" type="css" value="../paper-dialog-behavior/paper-dialog-common.css">
+  <style>
+    :host {
+      display: block;
+      top: 0;
+      bottom: 0;
+      margin: 0;
+      @apply(--paper-fullscreen-dialog);
+    }
+
+    :host([narrow]) {
+      left: 0;
+      right: 0;
+    }
+
+    [main] {
+      height: 100%;
+      background-color: var(--primary-background-color);
+    }
+    #toolbar {
+      background-color: var(--default-primary-color);
+      color: var(--text-primary_color);
+    }
+    #toolbar /deep/ .toolbar-tools > * {
+      margin: 0 8px;
+    }
+    ::content paper-button[affirmative] {
+      background: none;
+    }
+
+    #scroller {
+      @apply(--paper-fullscreen-dialog-content);
+    }
+  </style>
+  <template>
+    <iron-media-query query="max-width: {{responsiveWidth}}" queryMatches="{{narrow}}"></iron-media-query>
+    <paper-header-panel main id="headerPanel" mode="{{mode}}">
+      <paper-toolbar id="toolbar">
+        <paper-icon-button id="dismissBtn" on-tap="toggle"></paper-icon-button>
+        <div class="title flex">{{title}}</div>
+        <content id="affirmative" select="[affirmative]"></content>
+      </paper-toolbar>
+      <div style="display: none">
+      </div>
+      <div id="scroller">
+        <content select="*"></content>
+      </div>
+    </paper-header-panel>
+  </template>
+  <script>
+    Polymer({
+      /**
+       * Fired when the narrow layout changes.
+       *
+       * @event paper-responsive-change
+       * @param {Object} detail
+       * @param {boolean} detail.narrow true if the panel is in narrow layout.
+       */
+
+      properties: {
+        /**
+         * The `dismissIcon` attribute sets the icon for the dismiss button. The
+         * default behavior is to use the 'arrow-back' icon when there is no
+         * affirmative button (implying that changes are applied immediately), 
+         * and 'close' otherwise.
+         *
+         * @attribute dismissIcon
+         * @type string
+         * @default ''
+         */
+        dismissIcon: {
+          type: String,
+          value: '',
+          observer: '_dismissIconChanged'
+        },
+
+        /**
+         * When the browser window size is larger than the `responsiveWidth`, 
+         * the dialog becomes a modal dialog with a backdrop.
+         *
+         * @attribute responsiveWidth
+         * @type string
+         * @default '600px'
+         */
+        responsiveWidth: {
+          type: String,
+          value: '600px'
+        },
+
+        narrow: {
+          type: Boolean,
+          reflectToAttribute: true,
+          observer: '_narrowChanged',
+          notify: true
+        },
+
+        modal: {
+          type: Boolean,
+          value: true
+        },
+        _autoCloseDisabled: {
+          type: Boolean,
+          value: true
+        },
+        _layered: {
+          type: Boolean,
+          value: false
+        },
+        _affirmativeBtn: Object
+      },
+
+      behaviors: [
+        Polymer.PaperDialogBehavior
+      ],
+
+      attached: function() {
+        this.sizingTarget = this.$.scroller;
+        var nodes = Polymer.dom(this.$.affirmative).getDistributedNodes();
+        if (nodes.length) {
+          this._affirmativeBtn = nodes[0];
+        }
+        this._dismissIconChanged();
+      },
+
+      _dismissIconChanged: function() {
+        if (!this.dismissIcon) {
+          this.$.dismissBtn.icon = this._affirmativeBtn ? 'close' : 'arrow-back';
+        } else {
+          this.$.dismissBtn.icon = this.dismissIcon;
+        }
+      },
+
+      _narrowChanged: function() {
+        if (!this.narrow) {
+          this.style.width = this.responsiveWidth;
+          this.modal = true;
+        } else {
+          this.style.width = 'auto';
+          this.modal = false;
+        }
+        this.fire('paper-responsive-change', {narrow: this.narrow});
+      },
+
+    });
+
+  </script>
+
+</polymer-element>
