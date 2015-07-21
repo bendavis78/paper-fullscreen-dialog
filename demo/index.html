@@ -5,25 +5,28 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
-  <title>paper-dialog-fullscreen Demo</title>
+  <title>paper-fullscreen-dialog Demo</title>
 
-  <script src="../webcomponentsjs/webcomponents.js"></script>
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
-  <link rel="import" href="../paper-button/paper-button.html">
-  <link rel="import" href="../paper-toggle-button/paper-toggle-button.html">
-  <link rel="import" href="../paper-input/paper-input.html">
-  <link rel="import" href="../paper-toast/paper-toast.html">
-  <link rel="import" href="paper-dialog-fullscreen.html">
+  <link rel="import" href="../paper-fullscreen-dialog.html">
+  <link rel="import" href="../../paper-button/paper-button.html">
+  <link rel="import" href="../../paper-toggle-button/paper-toggle-button.html">
+  <link rel="import" href="../../paper-input/paper-input.html">
+  <link rel="import" href="../../paper-toast/paper-toast.html">
 
-  <style shim-shadowdom>
+  <style is="custom-style">
+    #dialog1, #dialog2 {
+      --paper-fullscreen-dialog-content: {
+        padding: 32px;
+      }
+    }
     body {
-      font-family: sans-serif;
+      @apply(--paper-font-body1);
+      color: #333;
     }
     section {
       margin: 3em 0;
-    }
-    .settings {
-      width: 200px;
     }
     .settings > div {
       margin: 1em 0; 
@@ -32,16 +35,16 @@
 
 </head>
 <body unresolved>
-  <template is="auto-binding">
+  <template is="dom-bind" id="scope">
 
     <paper-toast id="saveMsg" text="Save button pressed"></paper-toast>
 
     <section>
       <p>Example settings dialog</p>
 
-      <paper-button raised on-tap="{{toggle1}}">Dialog 1</paper-button>
+      <paper-button raised on-tap="toggle1">Dialog 1</paper-button>
 
-      <paper-dialog-fullscreen id="dialog1" heading="Settings">
+      <paper-fullscreen-dialog id="dialog1" title="Settings">
         <p>The back-arrow button indicates that any changes are saved immediately.</p>
         <section class="settings">
           <div center horizontal layout>
@@ -53,16 +56,16 @@
             <paper-toggle-button></paper-toggle-button>
           </div>
         </section>
-      </paper-dialog-fullscreen>
+      </paper-fullscreen-dialog>
     </section>
 
     <section>
       <p>Example edit dialog</p>
 
-      <paper-button raised on-tap="{{toggle2}}">Dialog 2</paper-button>
+      <paper-button raised on-tap="toggle2">Dialog 2</paper-button>
 
-      <paper-dialog-fullscreen id="dialog2" heading="Edit This">
-        <paper-button affirmative on-tap="{{save}}">Save</paper-button>
+      <paper-fullscreen-dialog id="dialog2" title="Edit This">
+        <paper-button affirmative on-tap="save">Save</paper-button>
         <p>The "X" button indicates any changes will be discarded when dismissed</p>
         <div>The confirmation action is disabled until all required actions are performed.</div>
         <div horizontal layout>
@@ -71,13 +74,13 @@
         <div horizontal layout>
           <paper-input label="Last name" floatingLabel>
         </div>
-      </paper-dialog-fullscreen>
+      </paper-fullscreen-dialog>
     </section>
 
   </template>
   <script>
     var $ = document.querySelector.bind(document);
-    var scope=$('template[is=auto-binding]');
+    var scope=$('#scope');
     scope.toggle1 = function() {
       $('#dialog1').toggle();
     };
@@ -85,6 +88,7 @@
       $('#dialog2').toggle();
     };
     scope.save = function() {
+      $('#dialog2').toggle();
       $('#saveMsg').show();
     };
 
