@@ -16,7 +16,8 @@ indicating that any changes are immediately saved upon selection.
 
 Example "settings" dialog (no confirmation action):
 
-    <paper-fullscreen-dialog id="dialog1" title="Settings">
+    <paper-fullscreen-dialog id="dialog1">
+      <h2>Settings</h2>
       <p>The back-arrow button indicates that any changes are saved immediately.</p>
       <section class="settings">
         <div center horizontal layout>
@@ -35,7 +36,8 @@ for the action, such as “save”, “send”, “add”, “share”, “updat
 
 Example "edit" dialog:
 
-    <paper-fullscreen-dialog id="dialog2" title="Edit This" validat opened>
+    <paper-fullscreen-dialog id="dialog2">
+      <h2>Edit This</h2>
       <paper-button affirmative>Save</paper-button>
       <p>The "X" button indicates any changes will be discarded when dismissed</p>
       <div>The confirmation action is disabled until all required actions are performed.</div>
@@ -97,13 +99,16 @@ Example "edit" dialog:
     #scroller {
       @apply(--paper-fullscreen-dialog-content);
     }
+    .title ::content h2 {
+      @apply(--paper-font-title);
+    }
   </style>
   <template>
     <iron-media-query query="max-width: {{responsiveWidth}}" queryMatches="{{narrow}}"></iron-media-query>
     <paper-header-panel main id="headerPanel" class="no-padding" mode="{{mode}}">
       <paper-toolbar id="toolbar">
         <paper-icon-button id="dismissBtn" on-tap="toggle"></paper-icon-button>
-        <div class="title flex">{{title}}</div>
+        <div class="title flex"><content select="h2:first-child"></content></div>
         <content id="affirmative" select="[affirmative]"></content>
       </paper-toolbar>
       <div style="display: none">
