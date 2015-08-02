@@ -38,7 +38,7 @@ Example "edit" dialog:
 
     <paper-fullscreen-dialog id="dialog2">
       <h2>Edit This</h2>
-      <paper-button affirmative>Save</paper-button>
+      <paper-button dialog-confirm>Save</paper-button>
       <p>The "X" button indicates any changes will be discarded when dismissed</p>
       <div>The confirmation action is disabled until all required actions are performed.</div>
       <div horizontal layout>
@@ -70,31 +70,40 @@ Example "edit" dialog:
 <dom-module id="paper-fullscreen-dialog">
   <style>
     :host {
+      position: absolute;
       display: block;
       top: 0;
       bottom: 0;
       margin: 0;
+      min-width: 360px;
       @apply(--paper-fullscreen-dialog);
     }
 
     :host([narrow]) {
       left: 0;
       right: 0;
+      min-width: auto;
+      max-width: 100%;
+      @apply(--paper-fullscreen-dialog-narrow);
     }
 
     [main] {
-      height: 100%;
       background-color: var(--primary-background-color);
     }
     #toolbar {
       background-color: var(--default-primary-color);
       color: var(--text-primary_color);
     }
-    #toolbar /deep/ .toolbar-tools > * {
-      margin: 0 8px;
+    #dismissBtn {
+      margin-left: 0px;
+      margin-right: 32px;
+      @apply(--paper-fullscreen-dialog-dismissbtn);
     }
-    ::content paper-button[affirmative] {
+    ::content paper-button[dialog-confirm] {
       background: none;
+      min-width: 44px;
+      margin: 6px 0 0 16px;
+      line-height: 20px;
     }
     #scroller {
       @apply(--paper-fullscreen-dialog-content);
@@ -104,14 +113,14 @@ Example "edit" dialog:
     }
   </style>
   <template>
-    <iron-media-query query="max-width: {{responsiveWidth}}" queryMatches="{{narrow}}"></iron-media-query>
+    <iron-media-query query="[[_computeMediaQuery(responsiveWidth)]]" query-matches="{{narrow}}"></iron-media-query>
     <paper-header-panel main id="headerPanel" class="no-padding" mode="{{mode}}">
       <paper-toolbar id="toolbar">
-        <paper-icon-button id="dismissBtn" on-tap="toggle"></paper-icon-button>
+        <paper-icon-button id="dismissBtn" on-tap="toggle" dialog-dismiss></paper-icon-button>
         <div class="title flex"><content select="h2"></content></div>
-        <content id="affirmative" select="[affirmative]"></content>
+        <content id="confirmBtn" select="[dialog-confirm]"></content>
       </paper-toolbar>
-      <div id="scroller">
+      <div id="scroller" class="flex">
         <content select="*"></content>
       </div>
     </paper-header-panel>
@@ -130,8 +139,8 @@ Example "edit" dialog:
         /**
          * The `dismissIcon` attribute sets the icon for the dismiss button. The
          * default behavior is to use the 'arrow-back' icon when there is no
-         * affirmative button (implying that changes are applied immediately), 
-         * and 'close' otherwise.
+         * confirm button (implying that changes are applied immediately), and
+         * 'close' otherwise.
          *
          * @attribute dismissIcon
          * @type string
@@ -153,7 +162,7 @@ Example "edit" dialog:
          */
         responsiveWidth: {
           type: String,
-          value: '600px'
+          value: '640px'
         },
 
         narrow: {
@@ -175,7 +184,7 @@ Example "edit" dialog:
           type: Boolean,
           value: false
         },
-        _affirmativeBtn: Object
+        _confirmBtn: Object
       },
 
       behaviors: [
@@ -184,16 +193,21 @@ Example "edit" dialog:
 
       attached: function() {
         this.sizingTarget = this.$.scroller;
-        var nodes = Polymer.dom(this.$.affirmative).getDistributedNodes();
+        var nodes = Polymer.dom(this.$.confirmBtn).getDistributedNodes();
         if (nodes.length) {
-          this._affirmativeBtn = nodes[0];
+          this._confirmBtn = nodes[0];
         }
         this._dismissIconChanged();
       },
 
+      _computeMediaQuery: function(responsiveWidth) {
+        var mq = '(max-width: ' + responsiveWidth + ')';
+        return mq;
+      },
+
       _dismissIconChanged: function() {
         if (!this.dismissIcon) {
-          this.$.dismissBtn.icon = this._affirmativeBtn ? 'close' : 'arrow-back';
+          this.$.dismissBtn.icon = this._confirmBtn ? 'close' : 'arrow-back';
         } else {
           this.$.dismissBtn.icon = this.dismissIcon;
         }
@@ -201,10 +215,8 @@ Example "edit" dialog:
 
       _narrowChanged: function() {
         if (!this.narrow) {
-          this.style.width = this.responsiveWidth;
           this.modal = true;
         } else {
-          this.style.width = 'auto';
           this.modal = false;
         }
         this.fire('paper-responsive-change', {narrow: this.narrow});
