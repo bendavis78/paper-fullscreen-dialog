@@ -1,6 +1,6 @@
 'use strict';
 
-var gulp = require('gulp-param')(require('gulp'), process.argv);
+var gulp = require('gulp');
 var add = require('gulp-add');
 var del = require('del');
 var browserSync = require('browser-sync').create();
@@ -16,6 +16,7 @@ var bump = require('gulp-bump');
 var tagVersion = require('gulp-tag-version');
 var git = require('gulp-git');
 var filter = require('gulp-filter');
+var portfinder = require('portfinder');
 
 function getPackage() {
   return JSON.parse(fs.readFileSync('bower.json', 'utf8')); 
@@ -71,7 +72,7 @@ gulp.task('release:minor', _bump.bind(null, 'minor'));
 gulp.task('release:major', _bump.bind(null, 'major'));
 
 // Watch Files For Changes & Reload
-gulp.task('serve', ['bower'], function (port) {
+gulp.task('serve', ['bower'], function () {
   var pkgRoot = '/' + getPackage().name;
   var opts = {
     notify: false,
@@ -89,36 +90,29 @@ gulp.task('serve', ['bower'], function (port) {
       routes: {}
     }
   };
-
-  if (port) {
-    port = parseInt(port);
-    opts.port = port;
-    opts.ui = {port: port + 1};
-  }
-
   opts.server.routes[pkgRoot] = '.';
-  browserSync.init(opts);
+
+  portfinder.basePort = 3000;
+  portfinder.getPort(function (err, port) {
+    opts.port = port;
+    console.log('using port: ' + port);
+    browserSync.init(opts);
+  });
 
   gulp.watch(['**/*.html']).on('change', reload);
   gulp.watch(['**/*.css']).on('change', reload);
-  gulp.watch(['bower.json']).on('change', function() {
-    gulp.start('bower:reload');
-  });
+  //gulp.watch(['bower.json']).on('change', 'bower:reload');
 });
 
 gulp.task('gh-pages', function() {
   var pkgName = getPackage().name;
-
-  // delete remote gh-pages branch
-  git.push('origin', ':gh-pages');
-
   return merge(
     gulp.src(gitFiles())
       .pipe(copy('.tmp/' + pkgName)),
     bower('.tmp')
       .pipe(add(
         'index.html',
-        '<meta http-equev="refresh" content="0;' + pkgName + '/">'
+        '<meta http-equiv="refresh" content="0;' + pkgName + '/">'
       ))
     ).pipe(ghPages()).on('end', function() {
       del(['.tmp', '.publish']);
