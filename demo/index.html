@@ -45,7 +45,7 @@
       <paper-button raised on-tap="toggle1">Dialog 1</paper-button>
 
       <paper-fullscreen-dialog id="dialog1">
-        <h2>Settings</h2>
+        <div class="title">Settings</div>
         <p>The back-arrow button indicates that any changes are saved immediately.</p>
         <section class="settings">
           <div center horizontal layout>
@@ -66,7 +66,7 @@
       <paper-button raised on-tap="toggle2">Dialog 2</paper-button>
 
       <paper-fullscreen-dialog id="dialog2">
-        <h2>Edit This</h2>
+        <div class="title">Edit This</div>
         <paper-button dialog-confirm on-tap="save">Save</paper-button>
         <p>The "X" button indicates any changes will be discarded when dismissed</p>
         <div>The confirmation action is disabled until all required actions are performed.</div>
