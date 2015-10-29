@@ -11,13 +11,16 @@ with a backdrop.
 
 An element with the `"tool"` attribute will serve as the title content.
 
-A dialog with no confirmation action will have a `"arrow-back"` icon,
+A dialog with no confirmation action should have the `"arrow-back"` icon,
 indicating that any changes are immediately saved upon selection.
 
 Example "settings" dialog (no confirmation action):
 
     <paper-fullscreen-dialog id="dialog1">
-      <div class="title">Settings</div>
+      <paper-toolbar class="toolbar">
+        <paper-icon-button icon="arrow-back" dialog-dismiss></paper-icon-button>
+        <div class="title">Settings</div>
+      </paper-toolbar>
       <p>The back-arrow button indicates that any changes are saved immediately.</p>
       <section class="settings">
         <div center horizontal layout>
@@ -37,8 +40,11 @@ for the action, such as “save”, “send”, “add”, “share”, “updat
 Example "edit" dialog:
 
     <paper-fullscreen-dialog id="dialog2">
-      <div class="title">Edit This</div>
-      <paper-button dialog-confirm>Save</paper-button>
+      <paper-toolbar class="toolbar">
+        <paper-icon-button icon="close" dialog-dismiss></paper-icon-button>
+        <div class="title flex">Edit This</div>
+        <paper-button dialog-confirm on-tap="save">Save</paper-button>
+      </paper-toolbar>
       <p>The "X" button indicates any changes will be discarded when dismissed</p>
       <div>The confirmation action is disabled until all required actions are performed.</div>
       <div horizontal layout>
@@ -47,8 +53,7 @@ Example "edit" dialog:
       <div horizontal layout>
         <paper-input label="Last name" floatingLabel>
       </div>
-    </paper-fullscreen-dialog>er-dialog-fullscreen>
-
+    </paper-fullscreen-dialog>
 
 @element paper-fullscreen-dialog
 @blurb Element providing a full-screen dialog with dismissive and confirmation actions 
@@ -59,12 +64,9 @@ Example "edit" dialog:
 
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
-<link rel="import" href="../iron-icons/iron-icons.html">
 <link rel="import" href="../iron-media-query/iron-media-query.html">
 <link rel="import" href="../paper-dialog-behavior/paper-dialog-behavior.html">
 <link rel="import" href="../paper-header-panel/paper-header-panel.html">
-<link rel="import" href="../paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../paper-styles/paper-styles.html">
 
 <dom-module id="paper-fullscreen-dialog">
@@ -87,23 +89,20 @@ Example "edit" dialog:
       @apply(--paper-fullscreen-dialog-narrow);
     }
 
+    ::content paper-icon-button[dialog-dismiss] {
+      margin-right: 24px;
+    }
+
+    ::content .toolbar [role=button]:first-child {
+      margin-left: -8px;
+    }
+
+    ::content .toolbar [role=button]:last-child {
+      margin-right: -12px;
+    }
+
     [main] {
       background-color: var(--primary-background-color);
-    }
-    #toolbar {
-      background-color: var(--default-primary-color);
-      color: var(--text-primary_color);
-    }
-    #dismissBtn {
-      margin-left: 0px;
-      margin-right: 32px;
-      @apply(--paper-fullscreen-dialog-dismissbtn);
-    }
-    ::content paper-button[dialog-confirm] {
-      background: none;
-      min-width: 44px;
-      margin: 6px 0 0 16px;
-      line-height: 20px;
     }
     #scroller {
       @apply(--paper-fullscreen-dialog-content);
@@ -112,11 +111,7 @@ Example "edit" dialog:
   <template>
     <iron-media-query query="[[_computeMediaQuery(responsiveWidth)]]" query-matches="{{narrow}}"></iron-media-query>
     <paper-header-panel main id="headerPanel" class="no-padding" mode="{{mode}}">
-      <paper-toolbar id="toolbar">
-        <paper-icon-button id="dismissBtn" on-tap="toggle" dialog-dismiss></paper-icon-button>
-        <div class="title flex"><content select=".title"></content></div>
-        <content id="confirmBtn" select="[dialog-confirm]"></content>
-      </paper-toolbar>
+      <content select=".toolbar"></content> 
       <div id="scroller" class="flex">
         <content select="*"></content>
       </div>
@@ -133,22 +128,6 @@ Example "edit" dialog:
        */
 
       properties: {
-        /**
-         * The `dismissIcon` attribute sets the icon for the dismiss button. The
-         * default behavior is to use the 'arrow-back' icon when there is no
-         * confirm button (implying that changes are applied immediately), and
-         * 'close' otherwise.
-         *
-         * @attribute dismissIcon
-         * @type string
-         * @default ''
-         */
-        dismissIcon: {
-          type: String,
-          value: '',
-          observer: '_dismissIconChanged'
-        },
-
         /**
          * When the browser window size is larger than the `responsiveWidth`, 
          * the dialog becomes a modal dialog with a backdrop.
@@ -172,8 +151,7 @@ Example "edit" dialog:
         modal: {
           type: Boolean,
           value: true
-        },
-        _confirmBtn: Object
+        }
       },
 
       behaviors: [
@@ -182,24 +160,11 @@ Example "edit" dialog:
 
       attached: function() {
         this.sizingTarget = this.$.scroller;
-        var nodes = Polymer.dom(this.$.confirmBtn).getDistributedNodes();
-        if (nodes.length) {
-          this._confirmBtn = nodes[0];
-        }
-        this._dismissIconChanged();
       },
 
       _computeMediaQuery: function(responsiveWidth) {
         var mq = '(max-width: ' + responsiveWidth + ')';
         return mq;
-      },
-
-      _dismissIconChanged: function() {
-        if (!this.dismissIcon) {
-          this.$.dismissBtn.icon = this._confirmBtn ? 'close' : 'arrow-back';
-        } else {
-          this.$.dismissBtn.icon = this.dismissIcon;
-        }
       },
 
       _narrowChanged: function() {

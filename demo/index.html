@@ -9,11 +9,14 @@
 
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
-  <link rel="import" href="../paper-fullscreen-dialog.html">
+  <link rel="import" href="../../iron-icons/iron-icons.html">
   <link rel="import" href="../../paper-button/paper-button.html">
-  <link rel="import" href="../../paper-toggle-button/paper-toggle-button.html">
+  <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
   <link rel="import" href="../../paper-input/paper-input.html">
   <link rel="import" href="../../paper-toast/paper-toast.html">
+  <link rel="import" href="../../paper-toolbar/paper-toolbar.html">
+  <link rel="import" href="../../paper-toggle-button/paper-toggle-button.html">
+  <link rel="import" href="../paper-fullscreen-dialog.html">
 
   <style is="custom-style">
     #dialog1, #dialog2 {
@@ -45,7 +48,10 @@
       <paper-button raised on-tap="toggle1">Dialog 1</paper-button>
 
       <paper-fullscreen-dialog id="dialog1">
-        <div class="title">Settings</div>
+        <paper-toolbar class="toolbar">
+          <paper-icon-button icon="arrow-back" dialog-dismiss></paper-icon-button>
+          <div class="title">Settings</div>
+        </paper-toolbar>
         <p>The back-arrow button indicates that any changes are saved immediately.</p>
         <section class="settings">
           <div center horizontal layout>
@@ -66,8 +72,11 @@
       <paper-button raised on-tap="toggle2">Dialog 2</paper-button>
 
       <paper-fullscreen-dialog id="dialog2">
-        <div class="title">Edit This</div>
-        <paper-button dialog-confirm on-tap="save">Save</paper-button>
+        <paper-toolbar class="toolbar">
+          <paper-icon-button icon="close" dialog-dismiss></paper-icon-button>
+          <div class="title flex">Edit This</div>
+          <paper-button dialog-confirm on-tap="save">Save</paper-button>
+        </paper-toolbar>
         <p>The "X" button indicates any changes will be discarded when dismissed</p>
         <div>The confirmation action is disabled until all required actions are performed.</div>
         <div horizontal layout>
