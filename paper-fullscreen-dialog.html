@@ -93,12 +93,13 @@ Example "edit" dialog:
       margin-right: 24px;
     }
 
-    ::content .toolbar [role=button]:first-child {
-      margin-left: -8px;
+    ::content .toolbar > [role=button]:first-child {
+      margin-left: -4px;
     }
 
-    ::content .toolbar [role=button]:last-child {
-      margin-right: -12px;
+    ::content .toolbar > paper-menu-button:last-child,
+    ::content .toolbar > [role=button]:last-child {
+      margin-right: -16px;
     }
 
     [main] {
