@@ -72,20 +72,49 @@ Example "edit" dialog:
 <dom-module id="paper-fullscreen-dialog">
   <style>
     :host {
-      position: absolute;
-      display: block;
+      position: fixed;
       top: 0;
-      bottom: 0;
-      margin: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: none;
+    }
+    :host #backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: var(--iron-overlay-backdrop-background-color, #000);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    :host([opened]) {
+      display: block;
+    }
+    :host([opened]) #backdrop {
+      display: block;
+      opacity: 0.6;
+    }
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: stretch;
+    }
+    #headerPanel {
       min-width: 480px;
       @apply(--paper-fullscreen-dialog);
     }
 
-    :host([narrow]) {
-      left: 0;
-      right: 0;
+    :host([narrow]) #headerPanel {
+      flex: 1;
       min-width: auto;
-      max-width: 100%;
       @apply(--paper-fullscreen-dialog-narrow);
     }
 
@@ -111,15 +140,19 @@ Example "edit" dialog:
   </style>
   <template>
     <iron-media-query query="[[_computeMediaQuery(responsiveWidth)]]" query-matches="{{narrow}}"></iron-media-query>
-    <paper-header-panel main id="headerPanel" class="no-padding" mode="{{mode}}">
-      <content select=".toolbar"></content> 
-      <div id="scroller" class="flex">
-        <content select="*"></content>
-      </div>
-    </paper-header-panel>
+    <div id="backdrop"></div>
+    <div id="overlay">
+      <paper-header-panel main id="headerPanel" class="no-padding" mode="{{mode}}">
+        <content select=".toolbar"></content> 
+        <div id="scroller" class="flex">
+          <content select="*"></content>
+        </div>
+      </paper-header-panel>
+    </div>
   </template>
   <script>
     Polymer({
+      is: 'paper-fullscreen-dialog',
       /**
        * Fired when the narrow layout changes.
        *
@@ -149,18 +182,30 @@ Example "edit" dialog:
           notify: true
         },
 
-        modal: {
+        opened: {
           type: Boolean,
-          value: true
-        }
+          value: false,
+          readOnly: true,
+          reflectToAttribute: true
+        },
       },
 
-      behaviors: [
-        Polymer.PaperDialogBehavior
-      ],
+      behaviors: [Polymer.PaperDialogBehavior],
 
       attached: function() {
         this.sizingTarget = this.$.scroller;
+        // Polymer's iron-overlay-behavior and paper-dialog-behavior don't really support multiple modal dialogs,
+        // so we make our own.
+        this.modal = false;
+        this.withBackdrop = false;
+      },
+
+      open: function() {
+        this._setOpened(true);
+      },
+
+      close: function() {
+        this._setOpened(false);
       },
 
       _computeMediaQuery: function(responsiveWidth) {
