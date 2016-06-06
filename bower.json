@@ -23,7 +23,8 @@
     "polymer": "Polymer/polymer#^1.0.0",
     "iron-media-query": "PolymerElements/iron-media-query#^1.0.0",
     "paper-dialog-behavior": "PolymerElements/paper-dialog-behavior#^1.0.0",
-    "paper-header-panel": "PolymerElements/paper-header-panel#^1.0.0"
+    "paper-header-panel": "PolymerElements/paper-header-panel#^1.0.0",
+    "neon-animation": "PolymerElements/neon-animation#^1.0.0"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
