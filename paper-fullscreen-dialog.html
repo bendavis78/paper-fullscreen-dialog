@@ -56,7 +56,7 @@ Example "edit" dialog:
     </paper-fullscreen-dialog>
 
 @element paper-fullscreen-dialog
-@blurb Element providing a full-screen dialog with dismissive and confirmation actions 
+@blurb Element providing a full-screen dialog with dismissive and confirmation actions
 @status alpha
 @homepage https://github.com/bendavis78/paper-fullscreen-dialog
 @demo demo/index.html
@@ -68,6 +68,7 @@ Example "edit" dialog:
 <link rel="import" href="../paper-dialog-behavior/paper-dialog-behavior.html">
 <link rel="import" href="../paper-header-panel/paper-header-panel.html">
 <link rel="import" href="../paper-styles/paper-styles.html">
+<link rel="import" href="../neon-animation/neon-animation-runner-behavior.html">
 
 <dom-module id="paper-fullscreen-dialog">
   <style>
@@ -143,7 +144,7 @@ Example "edit" dialog:
     <div id="backdrop"></div>
     <div id="overlay">
       <paper-header-panel main id="headerPanel" class="no-padding" mode="{{mode}}">
-        <content select=".toolbar"></content> 
+        <content select=".toolbar"></content>
         <div id="scroller" class="flex">
           <content select="*"></content>
         </div>
@@ -163,7 +164,7 @@ Example "edit" dialog:
 
       properties: {
         /**
-         * When the browser window size is larger than the `responsiveWidth`, 
+         * When the browser window size is larger than the `responsiveWidth`,
          * the dialog becomes a modal dialog with a backdrop.
          *
          * @attribute responsiveWidth
@@ -190,7 +191,14 @@ Example "edit" dialog:
         },
       },
 
-      behaviors: [Polymer.PaperDialogBehavior],
+      behaviors: [
+        Polymer.PaperDialogBehavior,
+        Polymer.NeonAnimationRunnerBehavior
+      ],
+
+      listeners: {
+        'neon-animation-finish': '_onNeonAnimationFinish'
+      },
 
       attached: function() {
         this.sizingTarget = this.$.scroller;
@@ -206,6 +214,30 @@ Example "edit" dialog:
 
       close: function() {
         this._setOpened(false);
+      },
+
+      _renderOpened: function() {
+        this.cancelAnimation();
+        if (this.withBackdrop) {
+          this.backdropElement.open();
+        }
+        this.playAnimation('entry');
+      },
+
+      _renderClosed: function() {
+        this.cancelAnimation();
+        if (this.withBackdrop) {
+          this.backdropElement.close();
+        }
+        this.playAnimation('exit');
+      },
+
+      _onNeonAnimationFinish: function() {
+        if (this.opened) {
+          this._finishRenderOpened();
+        } else {
+          this._finishRenderClosed();
+        }
       },
 
       _computeMediaQuery: function(responsiveWidth) {
